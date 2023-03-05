@@ -1,0 +1,124 @@
+syntax = "proto3";
+package taxi;
+
+import "google/protobuf/timestamp.proto";
+
+// todo option go_package = "some_path"
+
+service YandexTaxi {
+  rpc calculateRoute(RouteRequest) returns (RouteResponse) {}
+  rpc createOrder(OrderRequest) returns (OrderResponse) {}
+  rpc getDriverProfile(getDriverProfileRequest) returns (getDriverProfileResponse) {}
+  rpc getWorkLoadDriverStatus(WorkLoadDriverStatusRequest) returns (WorkLoadDriverStatusResponse) {}
+  rpc getOrderHistory(OrderHistoryRequest) returns (OrderHistoryResponse) {}
+  rpc createOrderReview(OrderReviewRequest) returns (OrderReviewResponse) {}
+  rpc updateRiderProfile(UpdateRiderProfileRequest) returns (UpdateRiderProfileResponse) {}
+}
+
+// calculateRoute
+message RouteRequest {
+  Point source = 1;
+  Point destination = 2;
+}
+
+message Point {
+  double latitude = 1;
+  double longitude = 2;
+  string name = 3;
+}
+
+message Tariff {
+  uint32 price = 1;
+  string tariff = 2;
+}
+
+message RouteResponse {
+  uint64 routeId = 1;
+  uint64 time = 2;
+  repeated Point path = 3;
+  repeated Tariff tariff = 4;
+}
+
+// createOrder
+message OrderRequest {
+  uint64 riderId = 1;
+  uint64 routeId = 2;
+  Tariff tariff = 3;
+}
+
+message OrderResponse {
+  uint64 orderId = 1;
+  string driverName = 2;
+  string vehicle = 3;
+  int32 arrivalTime = 4;
+}
+
+// getDriverProfile
+message getDriverProfileRequest {
+  uint64 driverId = 1;
+}
+
+message getDriverProfileResponse {
+  Driver driver = 1;
+}
+
+// getWorkLoadDriverStatus
+message WorkLoadDriverStatusRequest {
+  Point location = 1;
+}
+
+message WorkLoadDriverStatusResponse {
+  int32 workLoadStatus = 1;
+}
+
+// getOrderHistory
+message OrderHistoryRequest {
+  uint64 userId = 1;
+  UserType userType = 2;
+}
+
+enum UserType {
+  RIDER = 0;
+  DRIVER = 1;
+}
+
+message HistoryOrder {
+  uint64 orderId = 1;
+  google.protobuf.Timestamp startTime = 2;
+  google.protobuf.Timestamp finishTime = 3;
+  Point source = 4;
+  Point destination = 5;
+  uint32 price = 6;
+  uint32 travelTime = 7;
+  Driver driver = 8;
+}
+
+message Driver {
+  uint64 driverId = 1;
+  string name = 2;
+  int32 rating = 3;
+  string vehicle = 4;
+  string plateNumber = 5;
+}
+
+message OrderHistoryResponse {
+  repeated HistoryOrder orders = 1;
+}
+
+// createTripReview
+message OrderReviewRequest {
+  uint64 orderId = 1;
+  int32 rating = 2;
+  string message = 3;
+}
+
+message OrderReviewResponse {}
+
+// updateProfile
+message UpdateRiderProfileRequest {
+  uint64 riderId = 1;
+  string name = 2;
+  string phoneNumber = 3;
+}
+
+message UpdateRiderProfileResponse {}
